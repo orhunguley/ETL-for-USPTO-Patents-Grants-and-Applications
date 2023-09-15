@@ -62,6 +62,15 @@ def split_xml_into_grants(xml_string, patent_type="grant"):
 
 
 def get_abstract(patent):
+    """
+    Extracts the abstract from a patent XML element.
+
+    Args:
+        patent (BeautifulSoup): The BeautifulSoup object representing a patent.
+
+    Returns:
+        str: The patent's abstract as a string, or an empty string if not found.
+    """
     abstract = patent.find("abstract")
     if abstract:
         abstract = abstract.find('p', {'id': 'p-0001'})
@@ -73,6 +82,15 @@ def get_abstract(patent):
 
 
 def get_classifications(bib_data):
+    """
+    Extracts classification information (IPCR and CPC) from bibliographic data.
+
+    Args:
+        bib_data (BeautifulSoup): The BeautifulSoup object representing bibliographic data.
+
+    Returns:
+        dict: A dictionary containing IPCR and CPC classification information.
+    """
 
     ipcr_list = bib_data.find("classifications-ipcr")
     if ipcr_list:
@@ -95,6 +113,16 @@ def get_classifications(bib_data):
 
 
 def get_inventors(bib_data):
+    """
+    Extracts inventor information from bibliographic data.
+
+    Args:
+        bib_data (BeautifulSoup): The BeautifulSoup object representing bibliographic data.
+
+    Returns:
+        dict: A dictionary containing inventor information.
+    """
+
     inventors = bib_data.find("us-parties").find("inventors").find_all(
         "inventor")
     inventors = [xmltodict.parse(str(i)) for i in inventors]
@@ -102,6 +130,16 @@ def get_inventors(bib_data):
 
 
 def get_assignees(bib_data):
+    """
+    Extracts assignee information from bibliographic data.
+
+    Args:
+        bib_data (BeautifulSoup): The BeautifulSoup object representing bibliographic data.
+
+    Returns:
+        dict: A dictionary containing assignee information.
+    """
+
     assignees = bib_data.find("assignees")
     if assignees:
         assignees = [
@@ -113,6 +151,17 @@ def get_assignees(bib_data):
 
 
 def get_bib_data(patent, patent_type="grant"):
+    """
+    Extracts bibliographic data from a patent element.
+
+    Args:
+        patent (BeautifulSoup): The BeautifulSoup object representing a patent.
+        patent_type (str): The type of patent data (e.g., "grant" or "application").
+
+    Returns:
+        dict: A dictionary containing bibliographic information for the patent.
+    """
+
     bib_data = patent.find(f"us-bibliographic-data-{patent_type}",
                            recursive=False)
     pub_doc_id = bib_data.find("publication-reference").find(
@@ -139,7 +188,15 @@ def get_bib_data(patent, patent_type="grant"):
 
 
 def get_document_basics(patent):
+    """
+    Extracts basic document information from a patent element.
 
+    Args:
+        patent (BeautifulSoup): The BeautifulSoup object representing a patent.
+
+    Returns:
+        dict: A dictionary containing basic document information.
+    """
     patent_type = patent.get("id")
     # date_produced = patent.get("date-produced")
     date_produced = datetime.strptime(patent.get("date-produced"),
