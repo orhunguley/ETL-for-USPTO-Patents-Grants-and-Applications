@@ -1,0 +1,3 @@
+file_path: assignment_OG/sample_patents.xml
+es_host: http://elasticsearch:9200
+es_index: test-patents-00001

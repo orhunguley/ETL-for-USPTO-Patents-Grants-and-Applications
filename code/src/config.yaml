@@ -1,0 +1,4 @@
+es_host: http://elasticsearch:9200
+es_index: patents-00001
+grant_data_path: "data/sample_patent_grants.xml"
+application_data_path: "data/sample_patent_applications.xml"
