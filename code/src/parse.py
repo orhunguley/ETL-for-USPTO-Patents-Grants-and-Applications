@@ -1,8 +1,7 @@
 import argparse
-import sys
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """
     Parse command-line arguments for the SlowFast video training and testing pipeline.
 
@@ -21,7 +20,7 @@ def parse_args():
     parser.add_argument(
         "-d",
         "--patent-type",
-        default="application",
+        default="grant",
         type=str,
         choices=['application', 'grant'],
         help="Ingesting grant/application data",

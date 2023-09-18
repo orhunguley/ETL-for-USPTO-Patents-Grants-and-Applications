@@ -1,8 +1,10 @@
+import argparse
 from elasticsearch import Elasticsearch
 import yaml
 from extract_data import extract_data_from_xml, transform_data_to_patent
 from dataclasses import asdict
 from tqdm import tqdm
+from typing import List, Dict
 from parse import parse_args
 
 with open('credentials.yaml', 'r') as file:
@@ -22,7 +24,29 @@ PASSWORD = creds["password"]
 # }
 
 
-def create_index(config):
+def get_es_instance(config: Dict[str, str]) -> Elasticsearch:
+    """
+    Creates and returns an Elasticsearch instance with the specified configuration.
+
+    Args:
+        config (dict): A dictionary containing Elasticsearch configuration options, including:
+            - es_host (str): The Elasticsearch host URL.
+
+    Returns:
+        Elasticsearch: An Elasticsearch instance with the specified configuration.
+
+    Example:
+        config = {
+            "es_host": "https://localhost:9200"
+        }
+        es_instance = get_es_instance(config)
+    """
+    return Elasticsearch(config["es_host"],
+                         basic_auth=(USER, PASSWORD),
+                         verify_certs=False)
+
+
+def create_index(config: Dict[str, str]) -> None:
     """
     Creates an Elasticsearch index with the specified configuration.
 
@@ -48,41 +72,39 @@ def create_index(config):
 
     # Data mapping for the patent
     mapping = {
-        "mappings": {
-            "properties": {
-                "pub_doc_id": {
-                    "type": "text"
-                },
-                "app_doc_id": {
-                    "type": "text"
-                },
-                "patent_type": {
-                    "type": "text"
-                },
-                "abstract": {
-                    "type": "text"
-                },
-                "date_produced": {
-                    "type": "date"
-                },
-                "date_published": {
-                    "type": "date"
-                },
-                "date_applied": {
-                    "type": "date"
-                },
-                "ipcr_list": {
-                    "type": "object"
-                },
-                "cpc_list": {
-                    "type": "object"
-                },
-                "inventors": {
-                    "type": "object"
-                },
-                "assignees": {
-                    "type": "object"
-                }
+        "properties": {
+            "pub_doc_id": {
+                "type": "text"
+            },
+            "app_doc_id": {
+                "type": "text"
+            },
+            "patent_type": {
+                "type": "text"
+            },
+            "abstract": {
+                "type": "text"
+            },
+            "date_produced": {
+                "type": "date"
+            },
+            "date_published": {
+                "type": "date"
+            },
+            "date_applied": {
+                "type": "date"
+            },
+            "ipcr_list": {
+                "type": "object"
+            },
+            "cpc_list": {
+                "type": "object"
+            },
+            "inventors": {
+                "type": "object"
+            },
+            "assignees": {
+                "type": "object"
             }
         }
     }
@@ -91,7 +113,7 @@ def create_index(config):
                                                    mappings=mapping)
 
 
-def upload_document_to_es(config, document):
+def upload_document_to_es(config: Dict, document: Dict) -> None:
     """
     Uploads a patent document to an Elasticsearch index with optional overwrite behavior.
 
@@ -153,15 +175,33 @@ def upload_document_to_es(config, document):
             es.index(index=config["es_index"], document=document, id=doc_id)
 
 
-def ingest_data_to_es(config, xml_us_patents):
+def ingest_data_to_es(config: Dict, xml_us_patents: List) -> None:
+    """
+    Ingests patent data into Elasticsearch.
 
+    This function takes a list of XML patent data and transforms each XML patent
+    into a structured USPatent object. It then uploads each patent document to an Elasticsearch index
+    using the provided configuration.
+
+    Args:
+        config (dict): A dictionary containing Elasticsearch configuration options, including:
+            - es_host (str): The Elasticsearch host URL.
+            - es_index (str): The name of the index where the documents will be uploaded.
+            - patent_type (str): The type of patent documents, e.g., "grant" or "application".
+
+        xml_us_patents (list of str): A list of XML strings, each representing a patent.
+
+    Returns:
+        None
+
+    """
     for xml_patent in tqdm(xml_us_patents):
         patent = transform_data_to_patent(xml_patent=xml_patent,
                                           patent_type=config["patent_type"])
         upload_document_to_es(config=config, document=asdict(patent))
 
 
-def main(args):
+def main(args: argparse.Namespace) -> None:
 
     print("Loading config...")
 

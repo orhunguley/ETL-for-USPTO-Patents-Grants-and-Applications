@@ -5,9 +5,10 @@ import re
 from datamodels import USPatent
 from datetime import datetime
 import time
+from typing import List, Dict
 
 
-def format_xml(xml_data):
+def format_xml(xml_data: str) -> str:
     """
     Formats an XML document by removing XML and DOCTYPE declarations, adding a <root> tag at the beginning,
     and a </root> tag at the end, while preserving the structure of the document.
@@ -39,7 +40,8 @@ def format_xml(xml_data):
 import re
 
 
-def split_xml_into_grants(xml_string, patent_type="grant"):
+def split_xml_into_grants(xml_string: str,
+                          patent_type: str = "grant") -> List[str]:
     """
     Splits an XML string into pieces, each starting with "<us-patent-grant"
     and ending with "</us-patent-grant>".
@@ -61,7 +63,7 @@ def split_xml_into_grants(xml_string, patent_type="grant"):
     return pieces
 
 
-def get_abstract(patent):
+def get_abstract(patent: BeautifulSoup) -> str:
     """
     Extracts the abstract from a patent XML element.
 
@@ -81,7 +83,7 @@ def get_abstract(patent):
     return abstract
 
 
-def get_classifications(bib_data):
+def get_classifications(bib_data: BeautifulSoup) -> Dict:
     """
     Extracts classification information (IPCR and CPC) from bibliographic data.
 
@@ -112,7 +114,7 @@ def get_classifications(bib_data):
     return classes
 
 
-def get_inventors(bib_data):
+def get_inventors(bib_data: BeautifulSoup) -> Dict[str, List[Dict[str, str]]]:
     """
     Extracts inventor information from bibliographic data.
 
@@ -129,7 +131,7 @@ def get_inventors(bib_data):
     return dict(inventors=inventors)
 
 
-def get_assignees(bib_data):
+def get_assignees(bib_data: BeautifulSoup) -> Dict:
     """
     Extracts assignee information from bibliographic data.
 
@@ -150,7 +152,7 @@ def get_assignees(bib_data):
     return dict(assignees=assignees)
 
 
-def get_bib_data(patent, patent_type="grant"):
+def get_bib_data(patent: BeautifulSoup, patent_type: str = "grant") -> Dict:
     """
     Extracts bibliographic data from a patent element.
 
@@ -187,7 +189,7 @@ def get_bib_data(patent, patent_type="grant"):
     return bib_dict
 
 
-def get_document_basics(patent):
+def get_document_basics(patent: BeautifulSoup) -> Dict:
     """
     Extracts basic document information from a patent element.
 
@@ -211,7 +213,8 @@ def get_document_basics(patent):
     return basics
 
 
-def transform_data_to_patent(xml_patent, patent_type="grant"):
+def transform_data_to_patent(xml_patent: str,
+                             patent_type: str = "grant") -> USPatent:
     """
     Transforms XML data representing a patent into a USPatent object.
 
@@ -237,7 +240,7 @@ def transform_data_to_patent(xml_patent, patent_type="grant"):
     return USPatent(**result_dict)
 
 
-def extract_data_from_xml(file_path, patent_type="grant"):
+def extract_data_from_xml(file_path: str, patent_type: str = "grant") -> List:
     """
     Extracts US patent information from XML documents.
 
