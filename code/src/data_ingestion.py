@@ -24,7 +24,7 @@ PASSWORD = creds["password"]
 # }
 
 
-def get_es_instance(config: Dict[str, str]) -> Elasticsearch:
+def get_es_instance(config: Dict) -> Elasticsearch:
     """
     Creates and returns an Elasticsearch instance with the specified configuration.
 
@@ -46,7 +46,7 @@ def get_es_instance(config: Dict[str, str]) -> Elasticsearch:
                          verify_certs=False)
 
 
-def create_index(config: Dict[str, str]) -> None:
+def create_index(config: Dict) -> None:
     """
     Creates an Elasticsearch index with the specified configuration.
 
@@ -66,9 +66,9 @@ def create_index(config: Dict[str, str]) -> None:
         create_index(config)
         
     """
-    es = Elasticsearch(config["es_host"],
-                       basic_auth=(USER, PASSWORD),
-                       verify_certs=False)
+
+    es = get_es_instance(config=config)
+
 
     # Data mapping for the patent
     mapping = {
@@ -149,9 +149,7 @@ def upload_document_to_es(config: Dict, document: Dict) -> None:
         - If the document's "patent_type" is "us-patent-application," it will add can only 
         overwrite an application document.
     """
-    es = Elasticsearch(config["es_host"],
-                       basic_auth=(USER, PASSWORD),
-                       verify_certs=False)
+    es = get_es_instance(config=config)
 
     doc_id = document["app_doc_id"]
     doc_patent_type = document["patent_type"]
