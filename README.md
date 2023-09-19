@@ -1,8 +1,8 @@
 # ETL for USPTO Patent Grants & Applications
 This is an ETL script for for USPTO Patent Grants & Applications. Script starts with reading the ```xml``` file specified in the ```config.yaml```. It then extracts the relevant information and uploads the data to Elasticsearch.
 
-## tl;dr
-The Elasticsearch and Kibana setup is taken from this [repo](https://github.com/deviantony/docker-elk). You can setup and start the containers with the following command
+## Setting Up and Running the Containers
+The Elasticsearch and Kibana setup is taken from this [repo](https://github.com/deviantony/docker-elk). For more details, you can checkout the ReadMe section in that repo. You can setup and start the containers with the following command
 ```sh
 docker-compose up setup
 ```
@@ -15,7 +15,7 @@ docker-compose up
 
 After running the docker compose, list the running containers with ```docker container ls``` and get the ```container_id``` of ```etl-for-uspto-patents-grants-and-applications-conda``` image. Afterwards, create another terminal and run ```docker attach container_id```. With this command, you will get in a container with required conda packages and source code. Now, we are ready for data ingestion
 
-#####Run:
+##### Run:
 ```python data_ingestion.py --patent-type grant```
 
 Patent type can be either ```grant``` or ```application```
