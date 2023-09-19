@@ -37,9 +37,6 @@ def format_xml(xml_data: str) -> str:
     return xml_data
 
 
-import re
-
-
 def split_xml_into_grants(xml_string: str,
                           patent_type: str = "grant") -> List[str]:
     """
